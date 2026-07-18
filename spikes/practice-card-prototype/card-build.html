@@ -1,0 +1,210 @@
+<!--
+  PROTOTYPE — throwaway. Ticket: docs/wayfinder/tickets/009-daily-practice-card-design.md
+  LOCKED: ground Kanikkonna #FBF6E2 · ink Kadukka #2F2812 · tear-off calendar sheet.
+  Kani card: affirmation-deck aesthetic (spiritvibez reference) — blush card, ochre line-art nilavilakku,
+  serif + script message. Tap to reveal, one soft settle, stays.
+-->
+<title>Panchami — the kani card</title>
+<style>
+  :root{ --page:#e8e4dc; --pagetext:#3a352d; --pagesub:#7a7264; --bezel:#1b1917; --card:#f4f1ea; }
+  @media (prefers-color-scheme: dark){ :root{ --page:#232019; --pagetext:#e5ddcf; --pagesub:#9c937f; --bezel:#000; --card:#2c2820; } }
+  :root[data-theme="dark"]{ --page:#232019; --pagetext:#e5ddcf; --pagesub:#9c937f; --bezel:#000; --card:#2c2820; }
+  :root[data-theme="light"]{ --page:#e8e4dc; --pagetext:#3a352d; --pagesub:#7a7264; --bezel:#1b1917; --card:#f4f1ea; }
+  :root{ --ground:#FBF6E2; --ink:#2F2812; --gold:#A8842C; --warn:#A4552E;
+         --kcard:#F5EDCD; --kline:#A8842C; }
+
+  *{box-sizing:border-box;margin:0}
+  body{background:var(--page);color:var(--pagetext);font-family:system-ui,-apple-system,'Segoe UI',sans-serif;
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:26px 14px 40px}
+  .step{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--pagesub);margin-bottom:16px}
+  .stage{display:flex;flex-wrap:wrap;gap:26px;align-items:flex-start;justify-content:center}
+
+  .phone{width:280px;height:580px;background:var(--bezel);border-radius:42px;padding:9px;
+    box-shadow:0 22px 50px rgba(0,0,0,.30),0 3px 10px rgba(0,0,0,.18);flex:none}
+  .screen{position:relative;width:100%;height:100%;border-radius:34px;overflow:hidden;background:var(--ground);color:var(--ink)}
+  .island{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:78px;height:22px;border-radius:13px;background:var(--bezel);z-index:5}
+  .status{position:absolute;top:12px;left:22px;right:22px;display:flex;justify-content:space-between;
+    font-size:11.5px;font-weight:600;font-variant-numeric:tabular-nums;z-index:5}
+  #content{position:absolute;top:52px;left:0;right:0;bottom:0;padding:8px 20px 28px;overflow-y:auto;
+    scrollbar-width:none}
+  #content::-webkit-scrollbar{display:none}
+
+  /* top line: brand + profile chip */
+  .topline{display:flex;justify-content:space-between;align-items:center;margin:0 0 10px}
+  .brand{font-family:Georgia,serif;font-size:15px;font-weight:600;letter-spacing:.01em}
+  .me{width:28px;height:28px;border-radius:50%;border:1.5px solid rgba(47,40,18,.4);display:flex;align-items:center;
+    justify-content:center;font-size:12.5px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .scrim{position:absolute;inset:0;background:rgba(35,28,15,.35);opacity:0;pointer-events:none;transition:opacity .3s;z-index:8}
+  .scrim.on{opacity:1;pointer-events:auto}
+  .pmenu{position:absolute;top:0;bottom:0;right:0;width:190px;background:#FDFAF0;
+    box-shadow:-6px 0 24px rgba(43,38,32,.22);padding:0;z-index:9;
+    transform:translateX(100%);transition:transform .32s cubic-bezier(.3,.9,.3,1)}
+  .pmenu.on{transform:translateX(0)}
+  .pmenu .mhead{padding:52px 18px 14px;border-bottom:1px solid rgba(47,40,18,.14)}
+  .pmenu .mname{font-family:Georgia,serif;font-size:15px;font-weight:600}
+  .pmenu .mnaal{font-size:11px;color:rgba(47,40,18,.55);margin-top:2px}
+  .pmenu .mi{padding:12px 18px;font-size:13.5px;border-bottom:1px dashed rgba(47,40,18,.12)}
+  .pmenu .mi.sep{margin-top:10px;border-top:1px solid rgba(47,40,18,.14)}
+  @media (prefers-reduced-motion: reduce){ .pmenu,.scrim{transition:none} }
+
+  /* ---- bottom tab bar ---- */
+  .tabbar{position:absolute;left:0;right:0;bottom:0;height:64px;background:#F8F2DA;
+    border-top:1px solid rgba(47,40,18,.14);display:flex;align-items:flex-start;padding:7px 6px 0;z-index:6}
+  .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;color:rgba(47,40,18,.5);
+    font-size:9px;letter-spacing:.03em;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .tab svg{display:block}
+  .tab svg *{stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .tab.active{color:var(--gold)}
+  .tab .pav{width:30px;height:30px;border-radius:50%;background:#4A3F63;color:#F7F1E2;
+    display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:15px;margin-top:-6px;
+    box-shadow:0 2px 6px rgba(43,38,32,.25)}
+
+  /* FAB hybrid */
+  .fab{position:absolute;left:50%;bottom:38px;transform:translateX(-50%);width:52px;height:52px;border-radius:50%;
+    background:#4A3F63;color:#F7F1E2;display:none;align-items:center;justify-content:center;
+    font-family:Georgia,serif;font-size:24px;box-shadow:0 5px 14px rgba(43,38,32,.35);z-index:7;cursor:pointer}
+  /* swipe dots */
+  .dots{position:absolute;left:0;right:0;bottom:12px;display:none;justify-content:center;gap:7px;z-index:6}
+  .dots i{width:6px;height:6px;border-radius:50%;background:rgba(47,40,18,.25)}
+  .dots i.on{background:var(--gold)}
+  /* header doors */
+  .hdoors{display:none;justify-content:space-between;align-items:center;margin:-2px 0 8px}
+  .hdoors .hd{color:rgba(47,40,18,.55);cursor:pointer}
+  .hdoors .hd svg *{stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  /* drawer */
+  .burger{display:none;margin:-2px 0 8px;color:rgba(47,40,18,.65);cursor:pointer}
+  .burger svg *{stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round}
+  .drawer{position:absolute;top:0;bottom:0;left:0;width:170px;background:#F8F2DA;box-shadow:4px 0 18px rgba(0,0,0,.18);
+    z-index:8;padding:56px 18px 0;display:none}
+  .drawer .di{font-size:13.5px;padding:11px 0;border-bottom:1px dashed rgba(47,40,18,.15)}
+  /* hub cards */
+  .hub{display:none;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:14px}
+  .hub .hc{background:rgba(255,255,255,.5);border:1px solid rgba(47,40,18,.14);border-radius:10px;padding:10px 6px;
+    text-align:center;font-size:10px;color:rgba(47,40,18,.7);cursor:pointer}
+  .hub .hc svg{display:block;margin:0 auto 4px}
+  .hub .hc svg *{stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+  /* locked tear-off sheet */
+  .sheet{border-top:2px solid var(--ink);border-bottom:1px solid rgba(47,40,18,.25);padding:12px 0}
+  .row1{display:flex;justify-content:space-between;align-items:flex-start}
+  .datebig{display:flex;align-items:baseline;gap:8px}
+  .num{font-family:Georgia,serif;font-size:44px;font-weight:700;line-height:.9}
+  .daycol{font-size:12px;line-height:1.35}
+  .daycol b{display:block;font-size:13px}
+  .kolla{text-align:right;font-size:12px;line-height:1.45;opacity:.78}
+  .kolla b{display:block;font-size:13px;opacity:1}
+  .naalrow{display:flex;align-items:baseline;gap:8px;margin-top:12px}
+  .naalrow .lbl{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.6}
+  .naalrow .naal{font-family:Georgia,serif;font-size:22px;font-weight:600}
+  .naalrow .rasi{font-size:11.5px;opacity:.6}
+  .kalam{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:11px;padding-top:9px;border-top:1px dashed rgba(47,40,18,.28);font-variant-numeric:tabular-nums}
+  .kalam .k{display:block;font-size:10px;letter-spacing:.1em;text-transform:uppercase;opacity:.6;margin-bottom:2px}
+  .kalam .t{display:block;font-size:12px;color:var(--warn);font-weight:600;white-space:nowrap}
+
+  /* ---- Panchami's note · its own simple card (LOCKED: warm rose) ---- */
+  .pcard{margin-top:16px;background:#F7E3DC;border-radius:14px;padding:16px 18px;
+    box-shadow:0 3px 10px rgba(43,38,32,.10)}
+  .pcard .note{font-family:Georgia,serif;font-size:15px;line-height:1.62;font-style:italic}
+  .pcard .sig{margin-top:9px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;opacity:.55}
+  .pcard .prax{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    margin-top:12px;padding-top:11px;border-top:1px dashed rgba(47,40,18,.18)}
+  .pcard .prax .pl{min-width:0}
+  .pcard .prax .plbl{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.5;margin-bottom:2px}
+  .pcard .prax .pmantra{font-family:Georgia,serif;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pcard .prax .pmeta{font-size:10.5px;opacity:.5;margin-top:1px}
+  .pcard .prax .go{flex:none;font-size:12px;font-weight:600;color:var(--gold);white-space:nowrap}
+
+  /* ---- consult · the one primary action, thumb zone ---- */
+  .plink{display:none;margin-top:11px;font-size:12.5px;font-weight:600;color:var(--gold);cursor:pointer}
+  .plink.on{display:block}
+  .plink.center{text-align:center}
+  .consult{margin-top:18px;text-align:center}
+  .consult .q{font-family:Georgia,serif;font-style:italic;font-size:14.5px;margin-bottom:10px}
+  .consult button{width:100%;background:#4A3F63;color:#F7F1E2;border:0;border-radius:14px;padding:14px;
+    font:inherit;font-size:14.5px;font-weight:600;cursor:pointer}
+  .consult .sub{font-size:11px;opacity:.5;margin-top:8px}
+
+  .panel{width:300px;max-width:94vw}
+  .panel h2{font-size:13px;font-weight:650;margin-bottom:4px}
+  .panel .locked{font-size:11.5px;color:var(--pagesub);margin-bottom:10px;line-height:1.6}
+  .panel button{font:inherit;font-size:12.5px;padding:7px 14px;border-radius:999px;border:1px solid var(--pagesub);background:none;color:var(--pagetext);cursor:pointer}
+  .caption{background:var(--card);border-radius:12px;padding:12px 14px;font-size:12.5px;color:var(--pagesub);line-height:1.55;margin-top:12px}
+  .caption b{color:var(--pagetext)}
+</style>
+
+<div class="step">The Panchami home screen — locked</div>
+
+<div class="stage">
+  <div class="phone">
+    <div class="screen">
+      <div class="island"></div>
+      <div class="status"><span>6:00</span><span>▦ 82%</span></div>
+      <div id="content">
+        <div class="topline">
+          <span class="brand">Panchami</span>
+          <div class="me" id="me" role="button" aria-label="Profile and menu">A</div>
+        </div>
+        <div class="sheet">
+          <div class="row1">
+            <div class="datebig"><div class="num">18</div><div class="daycol"><b>Velli</b>Friday, July 2026</div></div>
+            <div class="kolla"><b>Karkadakam 3</b>Kollavarsham 1201</div>
+          </div>
+          <div class="naalrow"><span class="lbl">Naal</span><span class="naal">Chothi</span><span class="rasi">· Thulam rasi</span></div>
+          <div class="kalam">
+            <span><span class="k">Rahu</span><span class="t">10:30–12:00</span></span>
+            <span><span class="k">Gulika</span><span class="t">7:30–9:00</span></span>
+            <span><span class="k">Yamakanda</span><span class="t">3:00–4:30</span></span>
+          </div>
+        </div>
+
+        <div class="pcard">
+          <div class="note">Finishing is favored over beginning today. Let the morning's patience carry into your work — one thing, done fully.</div>
+          <div class="sig">— Panchami</div>
+        </div>
+
+        <div class="consult">
+          <div class="q">Something on your mind about today?</div>
+          <button>Speak to Panchami</button>
+          <div class="sub">1 credit · no clock, one concern, all your questions</div>
+        </div>
+
+      </div>
+
+      <div class="scrim" id="scrim"></div>
+      <div class="pmenu" id="pmenu">
+        <div class="mhead">
+          <div class="mname">Akhil</div>
+          <div class="mnaal">Thiruvonam · Makaram rasi</div>
+        </div>
+        <div class="mi">Jathakam</div>
+        <div class="mi">Pariharam</div>
+        <div class="mi">Panchangam</div>
+        <div class="mi sep">Wallet · 2 credits</div>
+        <div class="mi">Birth details</div>
+        <div class="mi">Settings</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>The complete screen</h2>
+    <div class="locked">Locked: Kanikkonna ground · Kadukka ink · tear-off sheet · warm-rose note card, no veil · profile chip + CTA as the only chrome</div>
+    <div class="caption">
+      <b>LOCKED — the Panchami home screen.</b> Wordmark + profile chip (right side-drawer: identity as naal,
+      Jathakam · Pariharam · Panchangam · wallet · birth details · settings) → tear-off calendar sheet →
+      her warm-rose note card → single CTA <b>Speak to Panchami</b>. Palette frozen: Kanikkonna ground,
+      Kadukka ink, gold accents, rust kalam times, warm-rose card, violet action. Screen scrolls; nothing else moves.
+    </div>
+  </div>
+</div>
+
+<script>
+const me = document.getElementById('me'), pmenu = document.getElementById('pmenu'), scrim = document.getElementById('scrim');
+function toggleMenu(open){
+  pmenu.classList.toggle('on', open);
+  scrim.classList.toggle('on', open);
+}
+me.onclick = () => toggleMenu(!pmenu.classList.contains('on'));
+scrim.onclick = () => toggleMenu(false);
+</script>
+

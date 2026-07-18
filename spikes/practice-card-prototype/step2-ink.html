@@ -1,0 +1,120 @@
+<!--
+  PROTOTYPE — throwaway. Ticket: docs/wayfinder/tickets/009-daily-practice-card-design.md
+  Step-by-step build. LOCKED: background = Kanikkonna #FBF6E2.
+  Step 2: the ink — tap a swatch to re-ink the specimen text on the locked ground.
+-->
+<title>Panchami — step 2 · ink</title>
+<style>
+  :root{ --page:#e8e4dc; --pagetext:#3a352d; --pagesub:#7a7264; --bezel:#1b1917; --card:#f4f1ea; }
+  @media (prefers-color-scheme: dark){ :root{ --page:#232019; --pagetext:#e5ddcf; --pagesub:#9c937f; --bezel:#000; --card:#2c2820; } }
+  :root[data-theme="dark"]{ --page:#232019; --pagetext:#e5ddcf; --pagesub:#9c937f; --bezel:#000; --card:#2c2820; }
+  :root[data-theme="light"]{ --page:#e8e4dc; --pagetext:#3a352d; --pagesub:#7a7264; --bezel:#1b1917; --card:#f4f1ea; }
+
+  *{box-sizing:border-box;margin:0}
+  body{background:var(--page);color:var(--pagetext);font-family:system-ui,-apple-system,'Segoe UI',sans-serif;
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:26px 14px 40px}
+
+  .step{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--pagesub);margin-bottom:16px}
+  .stage{display:flex;flex-wrap:wrap;gap:26px;align-items:flex-start;justify-content:center}
+
+  .phone{width:280px;height:580px;background:var(--bezel);border-radius:42px;padding:9px;
+    box-shadow:0 22px 50px rgba(0,0,0,.30), 0 3px 10px rgba(0,0,0,.18);flex:none}
+  .screen{position:relative;width:100%;height:100%;border-radius:34px;overflow:hidden;background:#FBF6E2}
+  .island{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:78px;height:22px;border-radius:13px;background:var(--bezel)}
+  .status{position:absolute;top:12px;left:22px;right:22px;display:flex;justify-content:space-between;
+    font-size:11.5px;font-weight:600;font-variant-numeric:tabular-nums}
+
+  .spec{position:absolute;top:64px;left:24px;right:24px;transition:color .25s}
+  .spec .kicker{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.62;margin-bottom:26px}
+  .spec .naallbl{font-family:Georgia,serif;font-style:italic;font-size:14px;opacity:.62}
+  .spec .naal{font-family:Georgia,serif;font-size:24px;font-weight:600;margin:2px 0 24px}
+  .spec .body{font-size:14.5px;line-height:1.6;margin-bottom:22px}
+  .spec .serif{font-family:Georgia,serif;font-style:italic;font-size:17px;line-height:1.55;opacity:.92}
+  .spec .small{font-size:12px;opacity:.62;margin-top:26px}
+
+  .panel{width:300px;max-width:94vw}
+  .panel h2{font-size:13px;font-weight:650;margin-bottom:4px}
+  .panel .locked{font-size:11.5px;color:var(--pagesub);margin-bottom:12px}
+  .sw{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:12px}
+  .sw button{width:44px;height:44px;border-radius:50%;border:1px solid rgba(0,0,0,.12);cursor:pointer;padding:0;
+    background:#FBF6E2;font-family:Georgia,serif;font-size:20px;font-weight:700;transition:transform .12s}
+  .sw button:hover{transform:scale(1.08)}
+  .sw button.sel{outline:3px solid var(--pagetext);outline-offset:2px}
+  .caption{background:var(--card);border-radius:12px;padding:12px 14px}
+  .caption .name{font-size:14.5px;font-weight:650}
+  .caption .hex{font-size:12px;color:var(--pagesub);font-variant-numeric:tabular-nums;margin-top:1px}
+  .caption .note{font-size:12.5px;color:var(--pagesub);margin-top:8px;line-height:1.5}
+</style>
+
+<div class="step">Step 2 · Ink — tap to re-ink the text</div>
+
+<div class="stage">
+  <div class="phone">
+    <div class="screen">
+      <div class="island"></div>
+      <div class="status" id="status"><span>6:00</span><span>▦ 82%</span></div>
+      <div class="spec" id="spec">
+        <div class="kicker">Velli · Karkadakam 3, 1201</div>
+        <div class="naallbl">Today's naal</div>
+        <div class="naal">Chothi</div>
+        <div class="body">A day that favors patient, careful work — which suits where your chart stands this week.</div>
+        <div class="serif">“This Sani period asks for steadiness, not speed.”</div>
+        <div class="small">Rahu kalam 10:30 AM–12:00 PM · after 4:30 the day is clear</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Choose the ink</h2>
+    <div class="locked">Ground locked: Kanikkonna #FBF6E2</div>
+    <div class="sw" id="sw"></div>
+    <div class="caption">
+      <div class="name" id="cname"></div>
+      <div class="hex" id="chex"></div>
+      <div class="note" id="cnote"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const inks = [
+  { id:'kari',    name:'Kari · soft charcoal',      hex:'#26241E', note:'Neutral soft black — disappears into pure readability. The safe modern choice; no opinion of its own.' },
+  { id:'kadukka', name:'Kadukka · warm umber-black',hex:'#2F2812', note:'Black with the ground’s own gold inside it — ink and paper from one world. Warmest without going brown. My recommendation.' },
+  { id:'chempu',  name:'Chempu · deep sepia-brown', hex:'#3A2C1A', note:'Overtly brown, old-manuscript sepia. Full antique character, but body text starts feeling faded at small sizes.' },
+  { id:'ravu',    name:'Ravu · night-violet ink',   hex:'#2B2433', note:'Near-black with Panchami’s violet inside. Quietly ties every word to her — at the cost of a touch of warmth.' },
+];
+function current(){
+  const v = new URLSearchParams(location.search).get('variant');
+  return inks.some(c => c.id===v) ? v : 'kadukka';
+}
+function select(id){
+  const p = new URLSearchParams(location.search); p.set('variant', id);
+  history.replaceState(null,'','?'+p.toString());
+  render();
+}
+function render(){
+  const c = inks.find(x => x.id===current());
+  document.getElementById('spec').style.color = c.hex;
+  document.getElementById('status').style.color = c.hex;
+  document.getElementById('cname').textContent = c.name;
+  document.getElementById('chex').textContent = c.hex;
+  document.getElementById('cnote').textContent = c.note;
+  document.querySelectorAll('.sw button').forEach(b => b.classList.toggle('sel', b.dataset.id===c.id));
+}
+const sw = document.getElementById('sw');
+inks.forEach(c => {
+  const b = document.createElement('button');
+  b.textContent = 'അ'; b.style.color = c.hex; b.dataset.id = c.id;
+  b.title = c.name + ' ' + c.hex; b.setAttribute('aria-label', c.name);
+  b.onclick = () => select(c.id);
+  sw.appendChild(b);
+});
+document.addEventListener('keydown', e => {
+  const t = e.target;
+  if (t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable)) return;
+  const i = inks.findIndex(c => c.id===current());
+  if (e.key==='ArrowLeft')  select(inks[(i-1+inks.length)%inks.length].id);
+  if (e.key==='ArrowRight') select(inks[(i+1)%inks.length].id);
+});
+render();
+</script>

@@ -1,0 +1,193 @@
+<!--
+  PROTOTYPE — throwaway. Ticket: docs/wayfinder/tickets/009-daily-practice-card-design.md
+  Step-by-step build. LOCKED: ground = Kanikkonna #FBF6E2 · ink = Kadukka #2F2812 (working).
+  Step 4: three design variations of the calendar-sheet unit, with a toggleable 4-column grid overlay.
+-->
+<title>Panchami — step 4 · sheet variations</title>
+<style>
+  :root{ --page:#e8e4dc; --pagetext:#3a352d; --pagesub:#7a7264; --bezel:#1b1917; --card:#f4f1ea; }
+  @media (prefers-color-scheme: dark){ :root{ --page:#232019; --pagetext:#e5ddcf; --pagesub:#9c937f; --bezel:#000; --card:#2c2820; } }
+  :root[data-theme="dark"]{ --page:#232019; --pagetext:#e5ddcf; --pagesub:#9c937f; --bezel:#000; --card:#2c2820; }
+  :root[data-theme="light"]{ --page:#e8e4dc; --pagetext:#3a352d; --pagesub:#7a7264; --bezel:#1b1917; --card:#f4f1ea; }
+  :root{ --ground:#FBF6E2; --ink:#2F2812; --gold:#A8842C; --warn:#A4552E; }
+
+  *{box-sizing:border-box;margin:0}
+  body{background:var(--page);color:var(--pagetext);font-family:system-ui,-apple-system,'Segoe UI',sans-serif;
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:26px 14px 96px}
+  .step{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--pagesub);margin-bottom:16px}
+  .stage{display:flex;flex-wrap:wrap;gap:26px;align-items:flex-start;justify-content:center}
+
+  .phone{width:280px;height:580px;background:var(--bezel);border-radius:42px;padding:9px;
+    box-shadow:0 22px 50px rgba(0,0,0,.30),0 3px 10px rgba(0,0,0,.18);flex:none}
+  .screen{position:relative;width:100%;height:100%;border-radius:34px;overflow:hidden;background:var(--ground);color:var(--ink)}
+  .island{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:78px;height:22px;border-radius:13px;background:var(--bezel);z-index:5}
+  .status{position:absolute;top:12px;left:22px;right:22px;display:flex;justify-content:space-between;
+    font-size:11.5px;font-weight:600;font-variant-numeric:tabular-nums;z-index:5}
+  #content{position:absolute;top:52px;left:0;right:0;bottom:0;padding:8px 20px 0}
+
+  /* grid overlay */
+  #grid{position:absolute;inset:0;display:none;z-index:9;pointer-events:none}
+  #grid.on{display:block}
+  #grid .cols{position:absolute;top:0;bottom:0;left:20px;right:20px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  #grid .cols i{background:rgba(200,60,60,.10);border-left:1px solid rgba(200,60,60,.25);border-right:1px solid rgba(200,60,60,.25)}
+  #grid .safe{position:absolute;left:0;right:0;border-top:1px dashed rgba(40,90,200,.45)}
+  #grid .safe.t{top:52px}
+  #grid .safe.b{bottom:26px}
+  #grid .m{position:absolute;top:0;bottom:0;width:20px;background:rgba(40,90,200,.07)}
+  #grid .m.l{left:0}
+  #grid .m.r{right:0}
+
+  /* ---------- V1 · Tear-off sheet ---------- */
+  .v1 .sheet{border-top:2px solid var(--ink);border-bottom:1px solid rgba(47,40,18,.25);padding:12px 0}
+  .v1 .row1{display:flex;justify-content:space-between;align-items:flex-start}
+  .v1 .datebig{display:flex;align-items:baseline;gap:8px}
+  .v1 .num{font-family:Georgia,serif;font-size:44px;font-weight:700;line-height:.9}
+  .v1 .daycol{font-size:12px;line-height:1.35}
+  .v1 .daycol b{display:block;font-size:13px}
+  .v1 .kolla{text-align:right;font-size:12px;line-height:1.45;opacity:.78}
+  .v1 .kolla b{display:block;font-size:13px;opacity:1}
+  .v1 .naalrow{display:flex;align-items:baseline;gap:8px;margin-top:12px}
+  .v1 .lbl{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.6}
+  .v1 .naal{font-family:Georgia,serif;font-size:22px;font-weight:600}
+  .v1 .rasi{font-size:11.5px;opacity:.6}
+  .v1 .kalam{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:11px;padding-top:9px;border-top:1px dashed rgba(47,40,18,.28);font-variant-numeric:tabular-nums}
+  .v1 .kalam .k{display:block;font-size:10px;letter-spacing:.1em;text-transform:uppercase;opacity:.6;margin-bottom:2px}
+  .v1 .kalam .t{display:block;font-size:12px;color:var(--warn);font-weight:600;white-space:nowrap}
+
+  /* ---------- V2 · Naal shrine (centered) ---------- */
+  .v2 .sheet{text-align:center;padding:10px 0}
+  .v2 .dateline{font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.62}
+  .v2 .naal{font-family:Georgia,serif;font-size:40px;font-weight:600;margin:14px 0 2px}
+  .v2 .naal::after{content:'';display:block;width:34px;height:1px;background:var(--gold);margin:14px auto 0}
+  .v2 .sub{font-size:12px;opacity:.62;margin-top:10px}
+  .v2 .kolla{font-size:12px;opacity:.78;margin-top:3px}
+  .v2 .kalam{display:flex;justify-content:center;gap:14px;margin-top:16px;font-size:11.5px;font-variant-numeric:tabular-nums}
+  .v2 .kalam span b{color:var(--warn);font-weight:600}
+  .v2 .kalam span i{font-style:normal;opacity:.6}
+
+  /* ---------- V3 · Panchangam ledger ---------- */
+  .v3 .sheet{padding:6px 0}
+  .v3 .hd{font-family:Georgia,serif;font-size:17px;font-weight:600;padding-bottom:8px;border-bottom:1px solid rgba(47,40,18,.3)}
+  .v3 .hd span{font-family:system-ui,sans-serif;font-size:11.5px;font-weight:400;opacity:.65;margin-left:6px}
+  .v3 table{width:100%;border-collapse:collapse;font-size:12.5px}
+  .v3 td{padding:7px 0;border-bottom:1px dashed rgba(47,40,18,.18);vertical-align:baseline}
+  .v3 td.k{opacity:.6;width:42%}
+  .v3 td.v{font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+  .v3 td.v.naal{font-family:Georgia,serif;font-size:15px}
+  .v3 td.v.warn{color:var(--warn)}
+
+  .panel{width:300px;max-width:94vw}
+  .panel h2{font-size:13px;font-weight:650;margin-bottom:4px}
+  .panel .locked{font-size:11.5px;color:var(--pagesub);margin-bottom:10px}
+  .panel .gridbtn{margin-bottom:12px}
+  .panel .gridbtn button{font:inherit;font-size:12.5px;padding:7px 14px;border-radius:999px;border:1px solid var(--pagesub);background:none;color:var(--pagetext);cursor:pointer}
+  .panel .gridbtn button.on{background:var(--pagetext);color:var(--page)}
+  .caption{background:var(--card);border-radius:12px;padding:12px 14px;font-size:12.5px;color:var(--pagesub);line-height:1.55}
+  .caption b{color:var(--pagetext)}
+
+  .switcher{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);display:flex;align-items:center;gap:6px;
+    background:#14110d;color:#f2ead9;border-radius:999px;padding:7px 10px;font-size:13px;box-shadow:0 4px 18px rgba(0,0,0,.35);z-index:99}
+  .switcher button{background:none;border:0;color:inherit;font-size:16px;padding:2px 8px;font:inherit;cursor:pointer}
+  .switcher .lbl{min-width:180px;text-align:center}
+</style>
+
+<div class="step">Step 4 · The calendar sheet — three structures</div>
+
+<div class="stage">
+  <div class="phone">
+    <div class="screen">
+      <div class="island"></div>
+      <div class="status"><span>6:00</span><span>▦ 82%</span></div>
+      <div id="content"></div>
+      <div id="grid">
+        <div class="m l"></div><div class="m r"></div>
+        <div class="cols"><i></i><i></i><i></i><i></i></div>
+        <div class="safe t"></div><div class="safe b"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Three hierarchies of the same data</h2>
+    <div class="locked">Locked: ground Kanikkonna · ink Kadukka</div>
+    <div class="gridbtn"><button id="gridtoggle">Show grid</button></div>
+    <div class="caption" id="cnote"></div>
+  </div>
+</div>
+
+<div class="switcher">
+  <button id="prev">←</button><span class="lbl" id="lbl"></span><button id="next">→</button>
+</div>
+
+<script>
+const variants = {
+  1:{ name:'Tear-off sheet', note:'<b>Date-first.</b> The wall calendar’s own grammar: heavy top rule, big serif numeral, Kollavarsham right-aligned, naal on its own row, kalam strip under a dashed rule. Reads left-to-right, top-to-bottom like the printed sheet. Squint test: the date wins, naal second.', html:`
+    <div class="v1"><div class="sheet">
+      <div class="row1">
+        <div class="datebig"><div class="num">18</div><div class="daycol"><b>Velli</b>Friday, July 2026</div></div>
+        <div class="kolla"><b>Karkadakam 3</b>Kollavarsham 1201</div>
+      </div>
+      <div class="naalrow"><span class="lbl">Naal</span><span class="naal">Chothi</span><span class="rasi">· Thulam rasi</span></div>
+      <div class="kalam">
+        <span><span class="k">Rahu</span><span class="t">10:30–12:00</span></span>
+        <span><span class="k">Gulika</span><span class="t">7:30–9:00</span></span>
+        <span><span class="k">Yamakanda</span><span class="t">3:00–4:30</span></span>
+      </div>
+    </div></div>`},
+  2:{ name:'Naal shrine', note:'<b>Naal-first.</b> Everything centered on the one word people open the sheet for: Chothi huge in serif with a gold rule beneath — the same ritual mark the sankalpa will use. Dates shrink to captions above and below; kalam times in one centered row. Squint test: only the naal survives.', html:`
+    <div class="v2"><div class="sheet">
+      <div class="dateline">Velli · 18 July 2026</div>
+      <div class="naal">Chothi</div>
+      <div class="sub">Thulam rasi · today's naal</div>
+      <div class="kolla">Karkadakam 3 · Kollavarsham 1201</div>
+      <div class="kalam">
+        <span><i>Rahu</i> <b>10:30–12:00</b></span>
+        <span><i>Gulika</i> <b>7:30–9:00</b></span>
+      </div>
+    </div></div>`},
+  3:{ name:'Panchangam ledger', note:'<b>Data-first.</b> The panchangam book’s table: a quiet header, then label–value rows under dashed rules, numerals right-aligned and tabular. Densest and most utilitarian — scales gracefully if we later add tithi, muhurtham, or sunrise. Squint test: nothing dominates; it reads as an instrument.', html:`
+    <div class="v3"><div class="sheet">
+      <div class="hd">Velli, 18 July <span>Karkadakam 3 · 1201</span></div>
+      <table>
+        <tr><td class="k">Naal</td><td class="v naal">Chothi · Thulam</td></tr>
+        <tr><td class="k">Tithi</td><td class="v">Ekadashi</td></tr>
+        <tr><td class="k">Rahu kalam</td><td class="v warn">10:30–12:00</td></tr>
+        <tr><td class="k">Gulika</td><td class="v warn">7:30–9:00</td></tr>
+        <tr><td class="k">Yamakanda</td><td class="v warn">3:00–4:30</td></tr>
+      </table>
+    </div></div>`},
+};
+const keys = Object.keys(variants);
+function current(){
+  const v = new URLSearchParams(location.search).get('variant');
+  return keys.includes(v) ? v : '1';
+}
+function render(){
+  const k = current(), c = variants[k];
+  document.getElementById('content').innerHTML = c.html;
+  document.getElementById('cnote').innerHTML = c.note;
+  document.getElementById('lbl').textContent = k + ' — ' + c.name;
+}
+function go(d){
+  const i = (keys.indexOf(current()) + d + keys.length) % keys.length;
+  const p = new URLSearchParams(location.search); p.set('variant', keys[i]);
+  history.replaceState(null,'','?'+p.toString()); render();
+}
+document.getElementById('prev').onclick = () => go(-1);
+document.getElementById('next').onclick = () => go(1);
+const gt = document.getElementById('gridtoggle');
+gt.onclick = () => {
+  const g = document.getElementById('grid');
+  g.classList.toggle('on');
+  gt.classList.toggle('on');
+  gt.textContent = g.classList.contains('on') ? 'Hide grid' : 'Show grid';
+};
+document.addEventListener('keydown', e => {
+  const t = e.target;
+  if (t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable)) return;
+  if (e.key==='ArrowLeft') go(-1);
+  if (e.key==='ArrowRight') go(1);
+  if (e.key==='g'||e.key==='G') gt.click();
+});
+render();
+</script>

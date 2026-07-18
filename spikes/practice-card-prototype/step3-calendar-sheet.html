@@ -1,0 +1,103 @@
+<!--
+  PROTOTYPE — throwaway. Ticket: docs/wayfinder/tickets/009-daily-practice-card-design.md
+  Step-by-step build. LOCKED: ground = Kanikkonna #FBF6E2 · ink = Kadukka #2F2812 (working).
+  Step 3: content #1 — the calendar-sheet unit (date + naal + kalam times as one block), option A.
+-->
+<title>Panchami — step 3 · calendar sheet</title>
+<style>
+  :root{ --page:#e8e4dc; --pagetext:#3a352d; --pagesub:#7a7264; --bezel:#1b1917; --card:#f4f1ea; }
+  @media (prefers-color-scheme: dark){ :root{ --page:#232019; --pagetext:#e5ddcf; --pagesub:#9c937f; --bezel:#000; --card:#2c2820; } }
+  :root[data-theme="dark"]{ --page:#232019; --pagetext:#e5ddcf; --pagesub:#9c937f; --bezel:#000; --card:#2c2820; }
+  :root[data-theme="light"]{ --page:#e8e4dc; --pagetext:#3a352d; --pagesub:#7a7264; --bezel:#1b1917; --card:#f4f1ea; }
+
+  /* locked app tokens */
+  :root{ --ground:#FBF6E2; --ink:#2F2812; --gold:#A8842C; --warn:#A4552E; }
+
+  *{box-sizing:border-box;margin:0}
+  body{background:var(--page);color:var(--pagetext);font-family:system-ui,-apple-system,'Segoe UI',sans-serif;
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:26px 14px 40px}
+
+  .step{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--pagesub);margin-bottom:16px}
+  .stage{display:flex;flex-wrap:wrap;gap:26px;align-items:flex-start;justify-content:center}
+
+  .phone{width:280px;height:580px;background:var(--bezel);border-radius:42px;padding:9px;
+    box-shadow:0 22px 50px rgba(0,0,0,.30), 0 3px 10px rgba(0,0,0,.18);flex:none}
+  .screen{position:relative;width:100%;height:100%;border-radius:34px;overflow:hidden;background:var(--ground);color:var(--ink)}
+  .island{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:78px;height:22px;border-radius:13px;background:var(--bezel)}
+  .status{position:absolute;top:12px;left:22px;right:22px;display:flex;justify-content:space-between;
+    font-size:11.5px;font-weight:600;font-variant-numeric:tabular-nums}
+
+  /* ---- the calendar-sheet unit ---- */
+  .sheet{position:absolute;top:56px;left:18px;right:18px;border-top:2px solid var(--ink);border-bottom:1px solid rgba(47,40,18,.25);padding:12px 2px 12px}
+  .sheet .row1{display:flex;justify-content:space-between;align-items:flex-start}
+  .sheet .datebig{display:flex;align-items:baseline;gap:8px}
+  .sheet .num{font-family:Georgia,serif;font-size:44px;font-weight:700;line-height:.9}
+  .sheet .daycol{font-size:12px;line-height:1.35}
+  .sheet .daycol b{display:block;font-size:13px}
+  .sheet .kolla{text-align:right;font-size:12px;line-height:1.45;color:var(--ink);opacity:.78}
+  .sheet .kolla b{display:block;font-size:13px;opacity:1}
+  .sheet .naalrow{display:flex;align-items:baseline;gap:8px;margin-top:12px}
+  .sheet .naalrow .lbl{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.6}
+  .sheet .naalrow .naal{font-family:Georgia,serif;font-size:22px;font-weight:600}
+  .sheet .naalrow .rasi{font-size:11.5px;opacity:.6}
+  .sheet .kalam{display:flex;gap:16px;margin-top:11px;padding-top:9px;border-top:1px dashed rgba(47,40,18,.28);
+    font-size:11.5px;font-variant-numeric:tabular-nums}
+  .sheet .kalam .k{opacity:.65}
+  .sheet .kalam .t{color:var(--warn);font-weight:600}
+
+  /* ghost blocks — content yet to come */
+  .ghost{position:absolute;left:18px;right:18px;border-radius:14px;background:rgba(47,40,18,.055)}
+  .ghost.g1{top:218px;height:64px}
+  .ghost.g2{top:296px;height:110px}
+  .ghost.g3{top:420px;height:64px}
+  .ghostlbl{position:absolute;left:0;right:0;text-align:center;font-size:10.5px;color:rgba(47,40,18,.4);letter-spacing:.08em;text-transform:uppercase}
+
+  .panel{width:300px;max-width:94vw}
+  .panel h2{font-size:13px;font-weight:650;margin-bottom:4px}
+  .panel .locked{font-size:11.5px;color:var(--pagesub);margin-bottom:12px;line-height:1.5}
+  .caption{background:var(--card);border-radius:12px;padding:12px 14px;font-size:12.5px;color:var(--pagesub);line-height:1.55}
+  .caption b{color:var(--pagetext)}
+</style>
+
+<div class="step">Step 3 · Content #1 — the calendar sheet (option A)</div>
+
+<div class="stage">
+  <div class="phone">
+    <div class="screen">
+      <div class="island"></div>
+      <div class="status"><span>6:00</span><span>▦ 82%</span></div>
+
+      <div class="sheet">
+        <div class="row1">
+          <div class="datebig">
+            <div class="num">18</div>
+            <div class="daycol"><b>Velli</b>July 2026</div>
+          </div>
+          <div class="kolla"><b>Karkadakam 3</b>Kollavarsham 1201</div>
+        </div>
+        <div class="naalrow">
+          <span class="lbl">Naal</span>
+          <span class="naal">Chothi</span>
+          <span class="rasi">· Thulam rasi</span>
+        </div>
+        <div class="kalam">
+          <span><span class="k">Rahu </span><span class="t">10:30–12:00</span></span>
+          <span><span class="k">Gulika </span><span class="t">7:30–9:00</span></span>
+          <span><span class="k">Yamakanda </span><span class="t">3:00–4:30</span></span>
+        </div>
+      </div>
+
+      <div class="ghost g1"></div><div class="ghostlbl" style="top:242px">Panchami's line · dasha</div>
+      <div class="ghost g2"></div><div class="ghostlbl" style="top:344px">Sankalpa · practice</div>
+      <div class="ghost g3"></div><div class="ghostlbl" style="top:444px">Consult thread</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>The calendar-sheet unit</h2>
+    <div class="locked">Locked so far: ground Kanikkonna #FBF6E2 · ink Kadukka #2F2812 (working)</div>
+    <div class="caption">
+      Built like the wall-calendar daily sheet: the <b>heavy top rule</b> and big date numeral are the tear-off sheet's grammar; <b>naal</b> gets the serif voice because it's the line people actually come for; the <b>kalam strip</b> sits under a dashed rule in caution color, tabular numerals, exactly where a Malayali eye expects it. Ghost blocks below mark where her personal content will grow. AM/PM dropped — the printed sheet never says it.
+    </div>
+  </div>
+</div>

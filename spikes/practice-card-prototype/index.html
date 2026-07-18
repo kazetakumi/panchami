@@ -1,0 +1,324 @@
+<!doctype html>
+<!--
+  PROTOTYPE — throwaway. Ticket: docs/wayfinder/tickets/009-daily-practice-card-design.md
+  Three variants of Panchami's daily practice card, switchable via ?variant= (A|B|C) and the floating bar.
+  A "Vishukkani" ritual reveal · B "Panchangam briefing" · C "Panchami speaks" (presence/chat-led)
+  Open directly in a browser. No build, no deps.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panchami — daily card prototype</title>
+<style>
+  :root{
+    --bg:#faf7f2; --card:#ffffff; --ink:#2b2620; --sub:#6f6659; --line:#e8e1d5;
+    --gold:#a8842c; --deep:#4a3f63; --accent:#7a5c9e; --good:#3d7a52; --warn:#a4552e;
+    --chip:#f1ebdf; --bubble:#f3eee6; --shadow:0 1px 3px rgba(43,38,32,.08),0 8px 24px rgba(43,38,32,.07);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#171411; --card:#211d18; --ink:#ece5d8; --sub:#a99e8c; --line:#37312a;
+      --gold:#d3a94c; --deep:#b3a5d6; --accent:#b697dd; --good:#7fc79a; --warn:#e0895f;
+      --chip:#2b2620; --bubble:#2a251f; --shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35); }
+  }
+  *{box-sizing:border-box;margin:0}
+  body{background:var(--bg);color:var(--ink);font:16px/1.55 Georgia,'Times New Roman',serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:420px;margin:0 auto;padding:20px 18px 96px}
+  .sans{font-family:system-ui,-apple-system,'Segoe UI',sans-serif}
+  .kicker{font-family:system-ui,sans-serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--sub)}
+  .footer-disclaimer{font-family:system-ui,sans-serif;font-size:11px;color:var(--sub);text-align:center;margin-top:26px;line-height:1.5}
+  button{font:inherit;cursor:pointer}
+
+  /* ---------- Variant A · Vishukkani ritual ---------- */
+  .vA{ text-align:center; padding-top:22px }
+  .vA .date{margin-bottom:4px}
+  .vA .greg{font-family:system-ui,sans-serif;font-size:12px;color:var(--sub)}
+  .vA .naal{margin:34px 0 6px;font-size:15px;color:var(--sub);font-style:italic}
+  .vA .naal b{font-style:normal;color:var(--ink);font-size:22px;font-weight:600;display:block;margin-top:2px}
+  .vA .sank{margin:36px auto;max-width:30ch;font-size:22px;line-height:1.5;font-style:italic;color:var(--deep)}
+  .vA .sank::before{content:'';display:block;width:34px;height:1px;background:var(--gold);margin:0 auto 22px}
+  .vA .sank::after {content:'';display:block;width:34px;height:1px;background:var(--gold);margin:22px auto 0}
+  .vA .why{font-size:13.5px;color:var(--sub);max-width:34ch;margin:0 auto}
+  .vA section.blk{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:18px 18px 16px;margin-top:22px;text-align:left}
+  .vA .blk h3{font-family:system-ui,sans-serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+  .vA .mantra{font-size:19px;color:var(--ink);margin:6px 0 2px}
+  .vA .mdetail{font-family:system-ui,sans-serif;font-size:13px;color:var(--sub)}
+  .vA .cite{font-family:system-ui,sans-serif;font-size:11.5px;color:var(--sub);margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+  .vA .kalam{display:flex;justify-content:space-between;font-family:system-ui,sans-serif;font-size:14px;padding:3px 0}
+  .vA .kalam span:last-child{color:var(--warn);font-variant-numeric:tabular-nums}
+  .vA .clear{font-family:system-ui,sans-serif;font-size:13px;color:var(--good);margin-top:8px}
+  .vA .diyas{margin:30px 0 4px}
+  .vA .diyas i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--gold);margin:0 4px;opacity:.9}
+  .vA .diyas i.off{background:var(--line)}
+  .vA .streaklbl{font-family:system-ui,sans-serif;font-size:12px;color:var(--sub)}
+  .vA .consult{margin-top:26px;font-size:15px;color:var(--ink)}
+  .vA .consult button{margin-top:10px;background:var(--deep);color:var(--bg);border:0;border-radius:999px;padding:10px 22px;font-family:system-ui,sans-serif;font-size:14px}
+  @media (prefers-color-scheme: dark){ .vA .consult button{color:#171411} }
+
+  /* ---------- Variant B · Panchangam briefing ---------- */
+  .vB{font-family:system-ui,-apple-system,'Segoe UI',sans-serif}
+  .vB .head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
+  .vB .head .d1{font-size:17px;font-weight:650}
+  .vB .head .d2{font-size:12px;color:var(--sub)}
+  .vB .streak{background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:12.5px;color:var(--ink)}
+  .vB .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px}
+  .vB .cell{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 10px 8px}
+  .vB .cell .k{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--sub)}
+  .vB .cell .v{font-size:14.5px;font-weight:600;margin-top:2px}
+  .vB .tl{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:16px;box-shadow:var(--shadow)}
+  .vB .tl h3{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--sub);margin-bottom:10px}
+  .vB .bar{position:relative;height:26px;border-radius:6px;background:var(--chip);overflow:hidden}
+  .vB .seg{position:absolute;top:0;bottom:0;border-radius:0}
+  .vB .seg.gulika{background:var(--accent);opacity:.55}
+  .vB .seg.rahu{background:var(--warn)}
+  .vB .seg.yama{background:var(--accent);opacity:.55}
+  .vB .now{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--ink)}
+  .vB .ticks{display:flex;justify-content:space-between;font-size:10.5px;color:var(--sub);margin-top:6px;font-variant-numeric:tabular-nums}
+  .vB .legend{display:flex;gap:14px;font-size:12px;color:var(--sub);margin-top:10px;flex-wrap:wrap}
+  .vB .legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+  .vB .caution{font-size:13.5px;color:var(--ink);margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .vB details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:0;margin-bottom:12px;box-shadow:var(--shadow)}
+  .vB summary{list-style:none;display:flex;justify-content:space-between;align-items:center;padding:14px;font-size:14.5px;font-weight:600}
+  .vB summary::-webkit-details-marker{display:none}
+  .vB summary .hint{font-size:12px;color:var(--sub);font-weight:400}
+  .vB .body{padding:0 14px 14px;font-size:14px;color:var(--ink)}
+  .vB .body .m{font-family:Georgia,serif;font-size:17px;margin:6px 0}
+  .vB .body .c{font-size:11.5px;color:var(--sub);margin-top:8px}
+  .vB .sankrow{background:var(--card);border-left:3px solid var(--gold);border-radius:0 12px 12px 0;padding:12px 14px;margin-bottom:16px;font-family:Georgia,serif;font-style:italic;font-size:15.5px;color:var(--deep)}
+  .vB .cta{width:100%;background:var(--deep);color:var(--bg);border:0;border-radius:12px;padding:14px;font-size:15px;font-weight:600}
+  @media (prefers-color-scheme: dark){ .vB .cta{color:#171411} }
+  .vB .ctasub{font-size:12px;text-align:center;color:var(--sub);margin-top:8px}
+
+  /* ---------- Variant C · Panchami speaks ---------- */
+  .vC{font-family:system-ui,-apple-system,'Segoe UI',sans-serif}
+  .vC .phead{display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:18px}
+  .vC .av{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--deep),var(--accent));display:flex;align-items:center;justify-content:center;color:var(--bg);font-size:22px;font-family:Georgia,serif}
+  @media (prefers-color-scheme: dark){ .vC .av{color:#171411} }
+  .vC .pname{font-size:16px;font-weight:650}
+  .vC .ai{font-size:10.5px;letter-spacing:.08em;border:1px solid var(--line);border-radius:4px;padding:1px 6px;color:var(--sub);margin-left:8px;vertical-align:2px}
+  .vC .psub{font-size:12px;color:var(--sub)}
+  .vC .stamp{text-align:center;font-size:11.5px;color:var(--sub);margin:10px 0}
+  .vC .msg{background:var(--bubble);border-radius:16px 16px 16px 4px;padding:12px 14px;margin-bottom:10px;max-width:88%;font-size:14.5px}
+  .vC .msg .naalline b{font-family:Georgia,serif;font-size:16px}
+  .vC .practice{border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow)}
+  .vC .practice .m{font-family:Georgia,serif;font-size:17px;margin:8px 0 2px}
+  .vC .practice .md{font-size:12.5px;color:var(--sub)}
+  .vC .begin{margin-top:10px;background:var(--gold);border:0;border-radius:999px;padding:8px 18px;font-size:13px;font-weight:600;color:#fff}
+  .vC .sankb{font-family:Georgia,serif;font-style:italic;font-size:15.5px;color:var(--deep);border-left:3px solid var(--gold);border-radius:4px 16px 16px 4px}
+  .vC .cautionb .t{color:var(--warn);font-weight:600}
+  .vC .streakline{text-align:center;font-size:12px;color:var(--sub);margin:16px 0 8px}
+  .vC .replyrow{display:flex;gap:8px;margin-top:14px}
+  .vC .replyrow button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:11px 8px;font-size:13.5px;color:var(--ink)}
+  .vC .replyrow button.primary{background:var(--deep);color:var(--bg);border:0;font-weight:600}
+  @media (prefers-color-scheme: dark){ .vC .replyrow button.primary{color:#171411} }
+
+  /* ---------- Variant D · C's frame + A's sankalpa ---------- */
+  .vD .sankhero{margin:28px auto;max-width:30ch;text-align:center;font-family:Georgia,serif;font-size:20px;line-height:1.5;font-style:italic;color:var(--deep)}
+  .vD .sankhero::before{content:'';display:block;width:34px;height:1px;background:var(--gold);margin:0 auto 18px}
+  .vD .sankhero::after {content:'';display:block;width:34px;height:1px;background:var(--gold);margin:18px auto 0}
+  .vD .sankwhy{text-align:center;font-family:system-ui,sans-serif;font-size:12.5px;color:var(--sub);max-width:34ch;margin:-14px auto 22px}
+
+  /* ---------- Floating switcher ---------- */
+  .switcher{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);display:flex;align-items:center;gap:6px;
+    background:#14110d;color:#f2ead9;border-radius:999px;padding:7px 10px;font-family:system-ui,sans-serif;font-size:13px;
+    box-shadow:0 4px 18px rgba(0,0,0,.35);z-index:99}
+  .switcher button{background:none;border:0;color:inherit;font-size:16px;padding:2px 8px}
+  .switcher .lbl{min-width:170px;text-align:center;letter-spacing:.02em}
+</style>
+</head>
+<body>
+<div class="wrap" id="root"></div>
+<div class="switcher sans">
+  <button id="prev" aria-label="Previous variant">←</button>
+  <span class="lbl" id="lbl"></span>
+  <button id="next" aria-label="Next variant">→</button>
+</div>
+
+<script>
+const DISCLAIMER = 'Guidance rooted in traditional Kerala jyothisham — not medical, legal, or financial advice.';
+
+const variants = {
+A: { name: 'Vishukkani ritual', html: `
+  <div class="vA">
+    <div class="date kicker">Velli · Karkadakam 3, 1201</div>
+    <div class="greg">Friday, 18 July 2026</div>
+    <div class="naal">Today's naal<b>Chothi</b></div>
+    <p class="sank">“This Sani period asks for steadiness, not speed. Today I do one thing fully before starting the next.”</p>
+    <p class="why">Your sankalpa for this dasha — Sani in your 10th asks the mind to settle before it acts.</p>
+
+    <section class="blk">
+      <h3>Today's practice · 2 minutes</h3>
+      <div class="mantra">“Om Sham Shanaishcharaya Namaha”</div>
+      <div class="mdetail">11 slow repetitions, seated, before the day begins. A steadying practice for a Sani period.</div>
+      <div class="cite">Navagraha stotra tradition · why this practice →</div>
+    </section>
+
+    <section class="blk">
+      <h3>The day's hours</h3>
+      <div class="kalam"><span>Rahu kalam</span><span>10:30 AM–12:00 PM</span></div>
+      <div class="kalam"><span>Gulika kalam</span><span>7:30–9:00 AM</span></div>
+      <div class="kalam"><span>Yamakanda</span><span>3:00–4:30 PM</span></div>
+      <div class="clear">The morning after 9:00 and the hours after 4:30 are clear for beginnings.</div>
+    </section>
+
+    <div class="diyas"><i></i><i></i><i></i><i></i><i></i><i></i><i class="off"></i></div>
+    <div class="streaklbl">Six mornings, unbroken</div>
+
+    <div class="consult">
+      Sani moves closer to your 10th house this week — if work has felt heavier, the chart sees it too.
+      <br><button>Talk it through with Panchami · 1 credit</button>
+    </div>
+    <div class="footer-disclaimer">${DISCLAIMER}</div>
+  </div>
+`},
+
+B: { name: 'Panchangam briefing', html: `
+  <div class="vB">
+    <div class="head">
+      <div><div class="d1">Velli, 18 July</div><div class="d2">Karkadakam 3, 1201 · Kollavarsham</div></div>
+      <div class="streak">🔥 6 days</div>
+    </div>
+
+    <div class="grid">
+      <div class="cell"><div class="k">Naal</div><div class="v">Chothi</div></div>
+      <div class="cell"><div class="k">Tithi</div><div class="v">Ekadashi</div></div>
+      <div class="cell"><div class="k">Dasha</div><div class="v">Sani</div></div>
+    </div>
+
+    <div class="tl">
+      <h3>Today's hours</h3>
+      <div class="bar">
+        <div class="seg gulika" style="left:12.5%;width:12.5%"></div>
+        <div class="seg rahu"   style="left:37.5%;width:12.5%"></div>
+        <div class="seg yama"   style="left:75%;width:12.5%"></div>
+        <div class="now" style="left:29%"></div>
+      </div>
+      <div class="ticks"><span>6 AM</span><span>9</span><span>12</span><span>3 PM</span><span>6 PM</span></div>
+      <div class="legend">
+        <span><i style="background:var(--warn)"></i>Rahu kalam 10:30–12:00</span>
+        <span><i style="background:var(--accent);opacity:.55"></i>Gulika 7:30–9:00 · Yamakanda 3:00–4:30</span>
+      </div>
+      <div class="caution">Not the hours for signing or new beginnings. Your afternoon from 4:30 is clear.</div>
+    </div>
+
+    <div class="sankrow">“This Sani period asks for steadiness, not speed. Today I do one thing fully before starting the next.”</div>
+
+    <details>
+      <summary>Today's practice <span class="hint">2 min · Sani steadying</span></summary>
+      <div class="body">
+        <div class="m">“Om Sham Shanaishcharaya Namaha”</div>
+        11 slow repetitions, seated, before the day begins.
+        <div class="c">Navagraha stotra tradition · why this practice →</div>
+      </div>
+    </details>
+
+    <button class="cta">Ask Panchami about this week · 1 credit</button>
+    <div class="ctasub">Sani nears your 10th house — work may feel heavier than usual.</div>
+    <div class="footer-disclaimer">${DISCLAIMER}</div>
+  </div>
+`},
+
+C: { name: 'Panchami speaks', html: `
+  <div class="vC">
+    <div class="phead">
+      <div class="av">പ</div>
+      <div>
+        <div><span class="pname">Panchami</span><span class="ai">AI</span></div>
+        <div class="psub">Trained in Kerala jyothisham</div>
+      </div>
+    </div>
+
+    <div class="stamp">Velli, 18 July · Karkadakam 3 · 6:00 AM</div>
+
+    <div class="msg"><span class="naalline">Good morning. Today's naal is <b>Chothi</b> — a day that favors patient, careful work, which suits where your chart stands.</span></div>
+
+    <div class="msg practice">
+      <div class="kicker" style="color:var(--gold)">Today's practice · 2 minutes</div>
+      <div class="m">“Om Sham Shanaishcharaya Namaha”</div>
+      <div class="md">11 slow repetitions, seated, before the day begins. A steadying practice for a Sani period — from the Navagraha stotra tradition.</div>
+      <button class="begin">Begin practice</button>
+    </div>
+
+    <div class="msg sankb">“This Sani period asks for steadiness, not speed. Today I do one thing fully before starting the next.”</div>
+
+    <div class="msg cautionb"><span class="t">Rahu kalam 10:30 AM–12:00 PM.</span> Traditionally set aside — not the hour for signing or new beginnings. After 4:30 the day is clear.</div>
+
+    <div class="msg">One more thing — Sani moves closer to your 10th house this week. If work has felt heavier lately, there is a reason in the chart. We can look at it together when you are ready.</div>
+
+    <div class="replyrow">
+      <button>Maybe later</button>
+      <button class="primary">Talk it through · 1 credit</button>
+    </div>
+
+    <div class="streakline">Six mornings together</div>
+    <div class="footer-disclaimer">${DISCLAIMER}</div>
+  </div>
+`}
+};
+
+variants.D = { name: "C + A's sankalpa", html: `
+  <div class="vC vD">
+    <div class="phead">
+      <div class="av">പ</div>
+      <div>
+        <div><span class="pname">Panchami</span><span class="ai">AI</span></div>
+        <div class="psub">Trained in Kerala jyothisham</div>
+      </div>
+    </div>
+
+    <div class="stamp">Velli, 18 July · Karkadakam 3 · 6:00 AM</div>
+
+    <div class="msg"><span class="naalline">Good morning. Today's naal is <b>Chothi</b> — a day that favors patient, careful work, which suits where your chart stands.</span></div>
+
+    <p class="sankhero">“This Sani period asks for steadiness, not speed. Today I do one thing fully before starting the next.”</p>
+    <p class="sankwhy">Your sankalpa for this dasha — Sani in your 10th asks the mind to settle before it acts.</p>
+
+    <div class="msg practice">
+      <div class="kicker" style="color:var(--gold)">Today's practice · 2 minutes</div>
+      <div class="m">“Om Sham Shanaishcharaya Namaha”</div>
+      <div class="md">11 slow repetitions, seated, before the day begins. A steadying practice for a Sani period — from the Navagraha stotra tradition.</div>
+      <button class="begin">Begin practice</button>
+    </div>
+
+    <div class="msg cautionb"><span class="t">Rahu kalam 10:30 AM–12:00 PM.</span> Traditionally set aside — not the hour for signing or new beginnings. After 4:30 the day is clear.</div>
+
+    <div class="msg">One more thing — Sani moves closer to your 10th house this week. If work has felt heavier lately, there is a reason in the chart. We can look at it together when you are ready.</div>
+
+    <div class="replyrow">
+      <button>Maybe later</button>
+      <button class="primary">Talk it through · 1 credit</button>
+    </div>
+
+    <div class="streakline">Six mornings together</div>
+    <div class="footer-disclaimer">${DISCLAIMER}</div>
+  </div>
+`};
+
+const keys = Object.keys(variants);
+function current(){
+  const v = new URLSearchParams(location.search).get('variant');
+  return keys.includes(v) ? v : 'D';
+}
+function render(){
+  const k = current();
+  document.getElementById('root').innerHTML = variants[k].html;
+  document.getElementById('lbl').textContent = k + ' — ' + variants[k].name;
+}
+function go(delta){
+  const i = (keys.indexOf(current()) + delta + keys.length) % keys.length;
+  const p = new URLSearchParams(location.search); p.set('variant', keys[i]);
+  history.replaceState(null,'','?'+p.toString());
+  render();
+}
+document.getElementById('prev').onclick = () => go(-1);
+document.getElementById('next').onclick = () => go(1);
+document.addEventListener('keydown', e => {
+  const t = e.target;
+  if (t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable)) return;
+  if (e.key==='ArrowLeft') go(-1);
+  if (e.key==='ArrowRight') go(1);
+});
+render();
+</script>
+</body>
+</html>

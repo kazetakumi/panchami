@@ -1,0 +1,128 @@
+<!--
+  PROTOTYPE — throwaway. Ticket: docs/wayfinder/tickets/009-daily-practice-card-design.md
+  Step-by-step build, step 1: the app background colour. Blank phone screen + clickable swatch palette.
+  Earlier card-layout variants: spikes/practice-card-prototype/index.html
+-->
+<title>Panchami — step 1 · background</title>
+<style>
+  :root{ --page:#e8e4dc; --pagetext:#3a352d; --pagesub:#7a7264; --bezel:#1b1917; --card:#f4f1ea; }
+  @media (prefers-color-scheme: dark){ :root{ --page:#232019; --pagetext:#e5ddcf; --pagesub:#9c937f; --bezel:#000; --card:#2c2820; } }
+  :root[data-theme="dark"]{ --page:#232019; --pagetext:#e5ddcf; --pagesub:#9c937f; --bezel:#000; --card:#2c2820; }
+  :root[data-theme="light"]{ --page:#e8e4dc; --pagetext:#3a352d; --pagesub:#7a7264; --bezel:#1b1917; --card:#f4f1ea; }
+
+  *{box-sizing:border-box;margin:0}
+  body{background:var(--page);color:var(--pagetext);font-family:system-ui,-apple-system,'Segoe UI',sans-serif;
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:26px 14px 40px;gap:0}
+
+  .step{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--pagesub);margin-bottom:16px}
+
+  .stage{display:flex;flex-wrap:wrap;gap:26px;align-items:flex-start;justify-content:center}
+
+  /* phone frame */
+  .phone{width:280px;height:580px;background:var(--bezel);border-radius:42px;padding:9px;
+    box-shadow:0 22px 50px rgba(0,0,0,.30), 0 3px 10px rgba(0,0,0,.18);flex:none}
+  .screen{position:relative;width:100%;height:100%;border-radius:34px;overflow:hidden;transition:background .3s ease}
+  .island{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:78px;height:22px;border-radius:13px;background:var(--bezel)}
+  .status{position:absolute;top:12px;left:22px;right:22px;display:flex;justify-content:space-between;
+    font-size:11.5px;font-weight:600;font-variant-numeric:tabular-nums}
+
+  /* palette panel */
+  .panel{width:300px;max-width:94vw}
+  .panel h2{font-size:13px;font-weight:650;margin-bottom:10px}
+  .group{margin-bottom:14px}
+  .group .g{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--pagesub);margin-bottom:7px}
+  .sw{display:flex;flex-wrap:wrap;gap:9px}
+  .sw button{width:44px;height:44px;border-radius:50%;border:1px solid rgba(0,0,0,.12);cursor:pointer;padding:0;
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.5);transition:transform .12s}
+  .sw button:hover{transform:scale(1.08)}
+  .sw button.sel{outline:3px solid var(--pagetext);outline-offset:2px}
+  .caption{background:var(--card);border-radius:12px;padding:12px 14px;margin-top:6px}
+  .caption .name{font-size:14.5px;font-weight:650}
+  .caption .hex{font-size:12px;color:var(--pagesub);font-variant-numeric:tabular-nums;margin-top:1px}
+  .caption .note{font-size:12.5px;color:var(--pagesub);margin-top:8px;line-height:1.5}
+</style>
+
+<div class="step">Step 1 · Background — tap a swatch</div>
+
+<div class="stage">
+  <div class="phone">
+    <div class="screen" id="screen">
+      <div class="island"></div>
+      <div class="status" id="status"><span>6:00</span><span>▦ 82%</span></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Choose the ground</h2>
+    <div id="groups"></div>
+    <div class="caption">
+      <div class="name" id="cname"></div>
+      <div class="hex" id="chex"></div>
+      <div class="note" id="cnote"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const palette = [
+  { group:'Whites & warm neutrals', items:[
+    { id:'white',     name:'Pure white',                 hex:'#FFFFFF', ink:'#20242a', note:'The clinical baseline. Clean and modern, but no warmth — nothing of the panchangam’s paper in it.' },
+    { id:'arippodi',  name:'Arippodi · rice-flour',      hex:'#FCFBF7', ink:'#2b2a24', note:'Barely off white, like a fresh kolam. White’s cleanliness with the clinical edge sanded off.' },
+    { id:'ivory',     name:'Ivory · old paper',          hex:'#FAF7F2', ink:'#2b2620', note:'The warm manuscript ground — the printed panchangam’s paper, one shade aged. My recommendation.' },
+    { id:'chandanam', name:'Chandanam · sandalwood',     hex:'#F6EFE3', ink:'#2e2718', note:'Overtly warm and devotional; the yellow cast can go dingy on cheap AMOLED screens at low brightness.' },
+  ]},
+  { group:'Green washes', items:[
+    { id:'thulasi',   name:'Thulasi · pale leaf',        hex:'#EFF5EC', ink:'#25301f', note:'A whisper of tulasi leaf. Calm and auspicious; greens read as growth and fresh mornings.' },
+    { id:'elaneer',   name:'Elaneer · tender mint',      hex:'#EAF4EE', ink:'#1f2e26', note:'Cooler, tender-coconut green. Spa-calm — risks drifting toward generic wellness-app territory.' },
+  ]},
+  { group:'Blue washes', items:[
+    { id:'akasham',   name:'Akasham · dawn sky',         hex:'#EEF4F9', ink:'#1f2933', note:'Pale morning sky. Serene and trustworthy, but blue is the coldest ground for a tradition built on lamplight.' },
+    { id:'mizhineer', name:'Mizhineer · misty blue-grey',hex:'#F0F3F4', ink:'#242b2e', note:'Almost neutral with a cool mist. Understated; reads more “finance app” than jyothisham.' },
+  ]},
+  { group:'Yellow & orange washes', items:[
+    { id:'kanikkonna',name:'Kanikkonna · Vishu gold',    hex:'#FBF6E2', ink:'#2f2812', note:'The pale gold of kanikkonna flowers — the Vishukkani flower itself. Festive warmth; strongest cultural echo of the tints.' },
+    { id:'chethi',    name:'Chethi · pale flame',        hex:'#FBF1E9', ink:'#32241a', note:'A peach wash from the chethi flower. Gentle warmth with energy in it; close to ivory but sunnier.' },
+  ]},
+];
+const flat = palette.flatMap(g => g.items);
+function current(){
+  const v = new URLSearchParams(location.search).get('variant');
+  return flat.some(c => c.id===v) ? v : 'ivory';
+}
+function select(id){
+  const p = new URLSearchParams(location.search); p.set('variant', id);
+  history.replaceState(null,'','?'+p.toString());
+  render();
+}
+function render(){
+  const c = flat.find(x => x.id===current());
+  document.getElementById('screen').style.background = c.hex;
+  document.getElementById('status').style.color = c.ink;
+  document.getElementById('cname').textContent = c.name;
+  document.getElementById('chex').textContent = c.hex;
+  document.getElementById('cnote').textContent = c.note;
+  document.querySelectorAll('.sw button').forEach(b => b.classList.toggle('sel', b.dataset.id===c.id));
+}
+const groupsEl = document.getElementById('groups');
+palette.forEach(g => {
+  const div = document.createElement('div'); div.className = 'group';
+  const h = document.createElement('div'); h.className = 'g'; h.textContent = g.group; div.appendChild(h);
+  const row = document.createElement('div'); row.className = 'sw';
+  g.items.forEach(c => {
+    const b = document.createElement('button');
+    b.style.background = c.hex; b.dataset.id = c.id; b.title = c.name + ' ' + c.hex;
+    b.setAttribute('aria-label', c.name);
+    b.onclick = () => select(c.id);
+    row.appendChild(b);
+  });
+  div.appendChild(row); groupsEl.appendChild(div);
+});
+document.addEventListener('keydown', e => {
+  const t = e.target;
+  if (t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable)) return;
+  const i = flat.findIndex(c => c.id===current());
+  if (e.key==='ArrowLeft')  select(flat[(i-1+flat.length)%flat.length].id);
+  if (e.key==='ArrowRight') select(flat[(i+1)%flat.length].id);
+});
+render();
+</script>
