@@ -1,0 +1,332 @@
+<!--
+  PROTOTYPE — throwaway. Ticket: docs/wayfinder/engineering/tickets/015-chat-ui-jathakam-layout.md
+  Reuses the LOCKED home-screen chrome verbatim (spikes/practice-card-prototype/card-build.html):
+  dark bezel + island + status bar, ground Kanikkonna #FBF6E2 / ink Kadukka #2F2812,
+  sheet convention (top/bottom rule, no card-shadow), dashed-rule lists, pcard rose #F7E3DC,
+  violet #4A3F63 + cream #F7F1E2 identity/action pair, gold #A8842C accent, rust #A4552E for kalam/warn only.
+  Chat avatar glyph "പ" and AI badge carried over from index.html variant C.
+-->
+<title>Panchami — jathakam &amp; chat, styled to the locked screen</title>
+<style>
+  :root{ --page:#e8e4dc; --pagetext:#3a352d; --pagesub:#7a7264; --bezel:#1b1917; --card:#f4f1ea; }
+  @media (prefers-color-scheme: dark){ :root{ --page:#232019; --pagetext:#e5ddcf; --pagesub:#9c937f; --bezel:#000; --card:#2c2820; } }
+  :root[data-theme="dark"]{ --page:#232019; --pagetext:#e5ddcf; --pagesub:#9c937f; --bezel:#000; --card:#2c2820; }
+  :root[data-theme="light"]{ --page:#e8e4dc; --pagetext:#3a352d; --pagesub:#7a7264; --bezel:#1b1917; --card:#f4f1ea; }
+
+  :root{
+    --ground:#FBF6E2; --ink:#2F2812; --gold:#A8842C; --warn:#A4552E;
+    --rose:#F7E3DC; --violet:#4A3F63; --cream:#F7F1E2; --paper:#FDFAF0;
+  }
+
+  *{box-sizing:border-box;margin:0}
+  body{background:var(--page);color:var(--pagetext);font-family:system-ui,-apple-system,'Segoe UI',sans-serif;
+    min-height:100vh;padding:26px 14px 50px}
+
+  .intro{max-width:640px;margin:0 auto 30px}
+  .kicker{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--pagesub);margin-bottom:14px}
+  .intro h1{font-family:Georgia,serif;font-weight:600;font-size:26px;line-height:1.25;margin-bottom:12px}
+  .intro p{font-size:14px;line-height:1.6;color:var(--pagesub);max-width:64ch}
+  .hints{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .hints span{background:var(--card);border:1px solid rgba(122,114,100,.3);border-radius:999px;
+    padding:5px 12px;font-size:12px;color:var(--pagetext)}
+
+  .stage{display:flex;flex-wrap:wrap;gap:30px;align-items:flex-start;justify-content:center}
+  .unit{display:flex;flex-direction:column;align-items:center;gap:14px}
+  .step{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--pagesub)}
+
+  .phone{width:300px;height:620px;background:var(--bezel);border-radius:42px;padding:9px;
+    box-shadow:0 22px 50px rgba(0,0,0,.30),0 3px 10px rgba(0,0,0,.18);flex:none}
+  .screen{position:relative;width:100%;height:100%;border-radius:34px;overflow:hidden;background:var(--ground);color:var(--ink)}
+  .island{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:78px;height:22px;border-radius:13px;background:var(--bezel);z-index:5}
+  .status{position:absolute;top:12px;left:22px;right:22px;display:flex;justify-content:space-between;
+    font-size:11.5px;font-weight:600;font-variant-numeric:tabular-nums;z-index:5}
+
+  #jContent, #cContent{position:absolute;top:52px;left:0;right:0;bottom:0;display:flex;flex-direction:column}
+  .topline{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:8px 20px 4px}
+  .back{font-family:Georgia,serif;font-size:19px;line-height:1;color:var(--ink);opacity:.7}
+  .ptitle{font-family:Georgia,serif;font-size:15px;font-weight:600}
+
+  .scroll{flex:1 1 auto;overflow-y:auto;padding:2px 20px 10px;scrollbar-width:none}
+  .scroll::-webkit-scrollbar{display:none}
+
+  /* ---- ledger sections, mirrors the sheet/kalam convention ---- */
+  .seclbl{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.55;margin:18px 0 8px;
+    display:flex;align-items:center;gap:7px}
+  .badge{font-size:9.5px;letter-spacing:.06em;border:1px solid rgba(47,40,18,.22);border-radius:4px;
+    padding:1px 6px;opacity:.65;text-transform:none;letter-spacing:.04em}
+
+  /* chart */
+  .chartblk{border-top:2px solid var(--ink);border-bottom:1px solid rgba(47,40,18,.25);padding:12px 0;margin-top:6px}
+  .chart-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);
+    aspect-ratio:1/1;border:1px solid rgba(47,40,18,.16)}
+  .cell{border:1px solid rgba(47,40,18,.14);display:flex;flex-direction:column;align-items:center;
+    justify-content:center;padding:3px 2px;text-align:center;position:relative}
+  .cell.center{grid-column:2/4;grid-row:2/4;border:none;justify-content:center}
+  .cell.center .mark{font-family:Georgia,serif;font-style:italic;font-size:12px;opacity:.28}
+  .sign{font-size:8.5px;letter-spacing:.06em;text-transform:uppercase;opacity:.5}
+  .planets{font-size:11.5px;font-weight:600;margin-top:2px;line-height:1.2}
+  .planet-tap{cursor:pointer;border-bottom:1.5px dotted var(--gold)}
+  .planet-tap.active{color:var(--violet);border-bottom-color:var(--violet)}
+  .lagna-diag{position:absolute;inset:5px;pointer-events:none;
+    background:linear-gradient(to bottom right, transparent calc(50% - .6px), var(--gold) calc(50% - .6px), var(--gold) calc(50% + .6px), transparent calc(50% + .6px))}
+
+  .caption{font-size:11px;text-align:center;opacity:.5;margin-top:9px}
+  .revealsheet{display:none;margin-top:10px;border-top:1px dashed rgba(47,40,18,.28);padding-top:9px;font-size:12.5px}
+  .revealsheet.show{display:block}
+  .revealsheet .name{font-family:Georgia,serif;font-size:14.5px;margin-bottom:3px}
+  .revealsheet .row{opacity:.72}
+
+  /* panchanga: same k/v idiom as the kalam strip */
+  .panch-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 8px;
+    border-top:1px dashed rgba(47,40,18,.28);padding-top:9px;font-variant-numeric:tabular-nums}
+  .panch-grid .k{display:block;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;opacity:.55}
+  .panch-grid .v{display:block;font-size:13px;font-weight:600;margin-top:2px}
+
+  /* dasha: dashed list, same as drawer .mi rows */
+  .dasha-list{border-top:1px dashed rgba(47,40,18,.28)}
+  .dasha-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;
+    border-bottom:1px dashed rgba(47,40,18,.15);font-size:13px}
+  .dasha-row .lord{display:flex;align-items:center;gap:6px}
+  .dasha-row .range{opacity:.55;font-variant-numeric:tabular-nums;font-size:12px}
+  .dasha-row.current{cursor:pointer}
+  .curbadge, .nowbadge{font-size:8.5px;text-transform:uppercase;letter-spacing:.06em;background:var(--violet);
+    color:var(--cream);padding:1px 6px;border-radius:9px}
+  .chevron{color:var(--gold);font-size:10px;margin-left:6px;transition:transform .15s ease}
+  .dasha-row.current.open .chevron{transform:rotate(180deg)}
+  .antardasha{max-height:0;overflow:hidden;transition:max-height .25s ease}
+  .antardasha.open{max-height:340px}
+  .anta-row{display:flex;justify-content:space-between;padding:7px 0 7px 16px;font-size:11.5px;
+    border-bottom:1px dashed rgba(47,40,18,.12);opacity:.85}
+  .anta-row .range{opacity:.6;font-variant-numeric:tabular-nums;font-size:11px}
+
+  .disclaimer{flex:0 0 auto;padding:9px 20px;text-align:center;font-size:10.5px;line-height:1.5;
+    opacity:.55;border-top:1px dashed rgba(47,40,18,.2);background:var(--ground)}
+
+  /* ---- chat ---- */
+  .chat-head{flex:0 0 auto;display:flex;align-items:center;gap:11px;padding:10px 20px 12px;
+    border-bottom:1px solid rgba(47,40,18,.14)}
+  .av{width:38px;height:38px;border-radius:50%;background:var(--violet);color:var(--cream);
+    display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:17px;flex:none}
+  .who .row1{display:flex;align-items:center;gap:7px}
+  .who .name{font-family:Georgia,serif;font-size:15.5px;font-weight:600}
+  .who .role{font-size:10.5px;opacity:.55;margin-top:1px}
+
+  .messages{flex:1 1 auto;overflow-y:auto;padding:14px 16px 6px;display:flex;flex-direction:column;gap:9px;scrollbar-width:none}
+  .messages::-webkit-scrollbar{display:none}
+  .bubble{max-width:82%;padding:10px 13px;font-size:13px;line-height:1.5}
+  .bubble.ai{align-self:flex-start;background:var(--paper);border:1px solid rgba(47,40,18,.10);
+    border-radius:15px 15px 15px 3px}
+  .bubble.user{align-self:flex-end;background:var(--ground);border:1px solid rgba(47,40,18,.18);
+    border-radius:15px 15px 3px 15px}
+
+  .cite{border-bottom:1.5px dotted var(--violet);color:var(--violet);font-weight:600;cursor:pointer}
+  .cite.pending{border-bottom-color:transparent;color:inherit;font-weight:inherit;cursor:default}
+  /* grounding note: in-flow block under the message, same tap-to-reveal language as the chart's
+     revealsheet — never a floating/absolute popover, so it can't overflow the phone's narrow width */
+  .grounding{align-self:flex-start;max-width:82%;background:var(--paper);border-left:3px solid var(--violet);
+    color:var(--ink);padding:9px 12px;border-radius:3px 10px 10px 3px;font-size:11.5px;line-height:1.5;
+    max-height:0;overflow:hidden;padding-top:0;padding-bottom:0;border-left-width:0;opacity:0;
+    transition:max-height .2s ease, opacity .2s ease}
+  .grounding.show{max-height:120px;padding-top:9px;padding-bottom:9px;border-left-width:3px;opacity:1}
+
+  .typing{align-self:flex-start;display:flex;gap:4px;padding:11px 14px;background:var(--paper);
+    border:1px solid rgba(47,40,18,.10);border-radius:15px 15px 15px 3px}
+  .typing span{width:5px;height:5px;border-radius:50%;background:rgba(47,40,18,.45);animation:bounce 1.1s infinite ease-in-out}
+  .typing span:nth-child(2){animation-delay:.15s}
+  .typing span:nth-child(3){animation-delay:.3s}
+  @keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-4px);opacity:1}}
+  .typing.hidden{display:none}
+  .cursor{display:inline-block;width:1.5px;height:12px;background:var(--ink);margin-left:2px;vertical-align:middle;animation:blink 1s step-end infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  .composer{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:10px 16px;
+    border-top:1px solid rgba(47,40,18,.14)}
+  .composer input{flex:1;border:1px solid rgba(47,40,18,.2);background:var(--paper);border-radius:20px;
+    padding:9px 14px;font-family:inherit;font-size:13px;color:var(--ink);outline:none}
+  .composer input:focus{border-color:var(--violet)}
+  .send{width:34px;height:34px;border-radius:50%;background:var(--violet);color:var(--cream);border:0;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;font-size:13px;
+    box-shadow:0 2px 6px rgba(43,38,32,.25)}
+</style>
+
+<div class="intro">
+  <div class="kicker">Ticket 015 — restyled to the locked home screen</div>
+  <h1>Jathakam page &amp; chat UI</h1>
+  <p>Same chrome as the locked Panchami home screen (dark bezel, island, status bar) and the same component
+  language: the sheet's top/bottom-rule blocks, the kalam strip's label-over-value grid, dashed-rule lists like
+  the profile drawer, the violet/cream identity pair for anything active or hers, gold for the "tap for more"
+  accent, rust reserved for kalam-style caution values only. No new card/shadow language invented.</p>
+  <div class="hints">
+    <span>Tap a chart planet for its detail</span>
+    <span>Tap the Sani row to expand antardasha</span>
+    <span>Tap the violet term in her message</span>
+  </div>
+</div>
+
+<div class="stage">
+  <div class="unit">
+    <div class="step">Jathakam</div>
+    <div class="phone">
+      <div class="screen">
+        <div class="island"></div>
+        <div class="status"><span>6:00</span><span>▦ 82%</span></div>
+        <div id="jContent">
+          <div class="topline"><span class="back">‹</span><span class="ptitle">Devika's Jathakam</span></div>
+          <div class="scroll">
+            <div class="chartblk">
+              <div class="chart-grid">
+                <div class="cell"><span class="sign">Meenam</span></div>
+                <div class="cell"><div class="lagna-diag"></div><span class="sign">Mesham</span></div>
+                <div class="cell"><span class="sign">Idavam</span><span class="planets"><span class="planet-tap" data-p="sukran">Sukran</span></span></div>
+                <div class="cell"><span class="sign">Mithunam</span></div>
+
+                <div class="cell"><span class="sign">Kumbham</span><span class="planets"><span class="planet-tap" data-p="rahu">Rahu</span></span></div>
+                <div class="cell center"><span class="mark">Panchami</span></div>
+                <div class="cell"><span class="sign">Karkitakam</span><span class="planets"><span class="planet-tap" data-p="chandra">Chandra</span></span></div>
+
+                <div class="cell"><span class="sign">Makaram</span></div>
+                <div class="cell"><span class="sign">Chingam</span><span class="planets"><span class="planet-tap" data-p="surya">Surya · Ketu</span></span></div>
+
+                <div class="cell"><span class="sign">Dhanu</span><span class="planets"><span class="planet-tap" data-p="guru">Guru</span></span></div>
+                <div class="cell"><span class="sign">Vrischikam</span><span class="planets"><span class="planet-tap" data-p="chovva">Chovva</span></span></div>
+                <div class="cell"><span class="sign">Thulam</span><span class="planets"><span class="planet-tap" data-p="sani">Sani</span></span></div>
+                <div class="cell"><span class="sign">Kanni</span><span class="planets"><span class="planet-tap" data-p="budhan">Budhan</span></span></div>
+              </div>
+              <div class="caption">tap a name for degree, nakshatra &amp; the English name</div>
+              <div class="revealsheet" id="sheet"></div>
+            </div>
+
+            <div class="seclbl">Panchangam <span class="badge">at birth</span></div>
+            <div class="panch-grid">
+              <span><span class="k">Tithi</span><span class="v">Shukla Panchami</span></span>
+              <span><span class="k">Nakshatra</span><span class="v">Anizham · 3</span></span>
+              <span><span class="k">Yoga</span><span class="v">Siddha</span></span>
+              <span><span class="k">Karana</span><span class="v">Bava</span></span>
+            </div>
+
+            <div class="seclbl">Dasha</div>
+            <div class="dasha-list">
+              <div class="dasha-row"><span class="lord">Rahu</span><span class="range">1988–1998</span></div>
+              <div class="dasha-row"><span class="lord">Guru</span><span class="range">1998–2014</span></div>
+              <div class="dasha-row current" id="saniRow" tabindex="0" role="button" aria-expanded="false">
+                <span class="lord">Sani <span class="curbadge">current</span></span>
+                <span class="range">2014–2033<span class="chevron">▾</span></span>
+              </div>
+              <div class="antardasha" id="saniAntar">
+                <div class="anta-row"><span class="lord">Sani</span><span class="range">Apr 2014–Apr 2017</span></div>
+                <div class="anta-row"><span class="lord">Budhan</span><span class="range">Apr 2017–Dec 2019</span></div>
+                <div class="anta-row"><span class="lord">Ketu</span><span class="range">Dec 2019–Jan 2021</span></div>
+                <div class="anta-row"><span class="lord">Sukran</span><span class="range">Jan 2021–Mar 2024</span></div>
+                <div class="anta-row"><span class="lord">Surya</span><span class="range">Mar 2024–Feb 2025</span></div>
+                <div class="anta-row"><span class="lord">Chandra <span class="nowbadge">now</span></span><span class="range">Feb 2025–Sep 2026</span></div>
+                <div class="anta-row"><span class="lord">Chovva</span><span class="range">Sep 2026–Oct 2027</span></div>
+                <div class="anta-row"><span class="lord">Rahu</span><span class="range">Oct 2027–Aug 2030</span></div>
+                <div class="anta-row"><span class="lord">Guru</span><span class="range">Aug 2030–Apr 2033</span></div>
+              </div>
+              <div class="dasha-row"><span class="lord">Budhan</span><span class="range">2033–2050</span></div>
+              <div class="dasha-row"><span class="lord">Ketu</span><span class="range">2050–2057</span></div>
+            </div>
+          </div>
+          <div class="disclaimer">Guidance rooted in traditional Kerala jyothisham — not medical, legal, or financial advice.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="unit">
+    <div class="step">Chat</div>
+    <div class="phone">
+      <div class="screen">
+        <div class="island"></div>
+        <div class="status"><span>6:00</span><span>▦ 82%</span></div>
+        <div id="cContent">
+          <div class="chat-head">
+            <div class="av">പ</div>
+            <div class="who">
+              <div class="row1"><span class="name">Panchami</span><span class="badge">AI</span></div>
+              <div class="role">AI astrologer</div>
+            </div>
+          </div>
+          <div class="messages" id="messages">
+            <div class="bubble ai">Good evening, Devika. What's on your mind today?</div>
+            <div class="bubble user">Work has felt so heavy the last few months. Is this going to ease up?</div>
+            <div class="bubble ai" id="lastMsg"></div>
+            <div class="grounding" id="groundNote">Saturn mahadasha → Moon antardasha, running Feb 2025–Sep 2026. Natal Saturn sits exalted in Thulam, your 7th house.</div>
+          </div>
+          <div class="composer">
+            <input type="text" placeholder="Ask Panchami…" aria-label="Message">
+            <button class="send" aria-label="Send">➤</button>
+          </div>
+          <div class="disclaimer">Guidance rooted in traditional Kerala jyothisham — not medical, legal, or financial advice.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const planetData = {
+    sukran:  {mal:"Sukran", en:"Venus", sign:"Idavam (Taurus)", deg:"6°42′", retro:false, nak:"Rohini · pada 4"},
+    rahu:    {mal:"Rahu", en:"Rahu", sign:"Kumbham (Aquarius)", deg:"19°03′", retro:true, nak:"Sathayam · pada 1"},
+    chandra: {mal:"Chandra", en:"Moon", sign:"Karkitakam (Cancer)", deg:"11°58′", retro:false, nak:"Punartham · pada 2"},
+    surya:   {mal:"Surya", en:"Sun", sign:"Chingam (Leo)", deg:"28°14′", retro:false, nak:"Uthram · pada 1"},
+    guru:    {mal:"Guru", en:"Jupiter", sign:"Dhanu (Sagittarius)", deg:"3°27′", retro:false, nak:"Moolam · pada 1"},
+    chovva:  {mal:"Chovva", en:"Mars", sign:"Vrischikam (Scorpio)", deg:"15°51′", retro:false, nak:"Anizham · pada 3"},
+    sani:    {mal:"Sani", en:"Saturn", sign:"Thulam (Libra)", deg:"9°16′", retro:false, nak:"Chothi · pada 2"},
+    budhan:  {mal:"Budhan", en:"Mercury", sign:"Kanni (Virgo)", deg:"22°39′", retro:true, nak:"Uthrattathi · pada 4"}
+  };
+  const sheet = document.getElementById('sheet');
+  document.querySelectorAll('.planet-tap').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const key = el.dataset.p;
+      const wasActive = el.classList.contains('active');
+      document.querySelectorAll('.planet-tap').forEach(p=>p.classList.remove('active'));
+      if(wasActive){ sheet.classList.remove('show'); return; }
+      el.classList.add('active');
+      const d = planetData[key];
+      sheet.innerHTML =
+        '<div class="name">'+d.mal+' ('+d.en+')</div>'+
+        '<div class="row">'+d.sign+' · '+d.deg+(d.retro? ' · Retrograde':'')+'</div>'+
+        '<div class="row">'+d.nak+'</div>';
+      sheet.classList.add('show');
+    });
+  });
+
+  const saniRow = document.getElementById('saniRow');
+  const saniAntar = document.getElementById('saniAntar');
+  function toggleSani(){
+    const open = saniAntar.classList.toggle('open');
+    saniRow.classList.toggle('open', open);
+    saniRow.setAttribute('aria-expanded', open);
+  }
+  saniRow.addEventListener('click', toggleSani);
+  saniRow.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggleSani(); }});
+
+  const lastMsg = document.getElementById('lastMsg');
+  const pre = "This period has real weight to it — you're in your ";
+  const post = " period, and that pairing tends to bring exactly this kind of steady pressure at work. It eases as the antardasha turns later this year.";
+  const full = pre + "Sani–Chandra" + post;
+  let i = 0;
+  function typeTick(){
+    if(i <= full.length){
+      let shown = full.slice(0, i);
+      if(i > pre.length){
+        const citeDone = i >= pre.length + "Sani–Chandra".length;
+        const citeShown = shown.slice(pre.length);
+        shown = pre + '<span class="cite'+(citeDone? '':' pending')+'" id="citeTerm">'+citeShown+'</span>' + shown.slice(pre.length + citeShown.length);
+      }
+      lastMsg.innerHTML = shown + (i < full.length ? '<span class="cursor"></span>' : '');
+      i += 2;
+      setTimeout(typeTick, 28);
+    } else {
+      attachToggle();
+    }
+  }
+  function attachToggle(){
+    const term = document.getElementById('citeTerm');
+    const note = document.getElementById('groundNote');
+    if(!term || !note) return;
+    term.addEventListener('click', ()=> note.classList.toggle('show'));
+  }
+  setTimeout(typeTick, 700);
+</script>
