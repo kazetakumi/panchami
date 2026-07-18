@@ -3,7 +3,7 @@ id: 002
 title: Acquire the core jyothisham texts
 label: wayfinder:task
 status: open
-assignee:
+assignee: akhil (claimed 2026-07-18, task session)
 blocked-by: []
 ---
 
